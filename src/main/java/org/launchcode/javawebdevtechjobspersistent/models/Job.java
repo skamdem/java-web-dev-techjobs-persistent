@@ -1,51 +1,48 @@
 package org.launchcode.javawebdevtechjobspersistent.models;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 @Entity
-public class Job{
+public class Job extends AbstractEntity {
 
-    @Id
-    @GeneratedValue
-    private int id;
+    @ManyToOne
+    @NotNull(message = "Employer is required")
+    private Employer employer;
 
-    private String name;
+    @ManyToMany
+    private final List<Skill> skills = new ArrayList<>();
 
-    private String employer;
-    private String skills;
+    public Job() {}
 
-    public Job() {
-    }
-
-    public Job(String anEmployer, String someSkills) {
-        super();
+    public Job(@NotBlank(message = "Job name is required")
+               @Size(min = 3, message = "Job name must be at least 3 characters long") String name,
+               Employer anEmployer) {
+        this.setName(name);
         this.employer = anEmployer;
-        this.skills = someSkills;
     }
 
     // Getters and setters.
+    public Employer getEmployer() {return employer;}
 
-    public String getName() {
-        return name;
-    }
+    public void setEmployer(Employer employer) {this.employer = employer;}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public List<Skill> getSkills() {return skills;}
 
-    public String getEmployer() {
-        return employer;
-    }
-
-    public void setEmployer(String employer) {
-        this.employer = employer;
-    }
-
-    public String getSkills() {
-        return skills;
-    }
-
-    public void setSkills(String skills) {
-        this.skills = skills;
+    public void setSkills(List<Skill> someSkills) {
+        ListIterator<Skill> listIterator = someSkills.listIterator();
+        while (listIterator.hasNext()){
+            Skill skill = listIterator.next();
+            if (!this.skills.contains(skill)){
+                this.skills.add(skill);
+            }
+        }
     }
 }
